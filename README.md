@@ -17,6 +17,7 @@ Other major components include:
 - Farmer Mobile Application (React + Capacitor)
 
 ## Key Features
+- Real time routes to collect milk from farmer locations. (Maplibre + OSRM)
 - View assigned milk collection routes
 - Access farmer location details
 - Integration with VRP-optimized route data
@@ -28,6 +29,7 @@ Other major components include:
 - Vite
 - Capacitor
 - REST APIs
+- Maplibre + OSRM
 
 ## Academic Context
 This project is developed as **Final Year Project** of the **Bachelor of Computer Science (BCS)** undergraduate degree program at the **University of Ruhuna, Sri Lanka**.

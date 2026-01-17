@@ -10,7 +10,7 @@ This application acts as the primary control and management interface of the ove
 ## Key Features
 - Farmer, driver, and depot management
 - Route and logistics monitoring
-- Integration with VRP-based optimization service
+- Integration with Node.js backend / Spring boot backend to generate Optimized routes to collect milk
 
 ## Technology Stack
 - React 19 (Vite)

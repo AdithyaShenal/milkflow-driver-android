@@ -15,6 +15,7 @@ Other major components include:
 - Main Backend (Node.js)
 - VRP Optimization Service (Spring Boot)
 - Farmer Mobile Application (React + Capacitor)
+- Driver Mobile Application (React + Capacitor)
 
 ## Key Features
 - Real time routes to collect milk from farmer locations. (Maplibre + OSRM)

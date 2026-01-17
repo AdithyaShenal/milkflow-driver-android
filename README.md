@@ -1,4 +1,5 @@
 # MilkFlow – Driver Mobile Application
+MilkFlow - An Intelligent Dairy Supply Chain & Route Optimization System with VRP-Based Routing Logistics
 
 ## Overview
 This repository contains the **Driver Mobile Application** of the **MilkFlow** system, developed using **React 19**, **Vite**, and **Capacitor**.

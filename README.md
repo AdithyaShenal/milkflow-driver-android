@@ -29,4 +29,4 @@ Other major components include:
 - REST APIs
 
 ## Academic Context
-This project is developed as part of the **Bachelor of Computer Science (BCS)** undergraduate degree program at the **University of Ruhuna, Sri Lanka**.
+This project is developed as **Final Year Project** of the **Bachelor of Computer Science (BCS)** undergraduate degree program at the **University of Ruhuna, Sri Lanka**.

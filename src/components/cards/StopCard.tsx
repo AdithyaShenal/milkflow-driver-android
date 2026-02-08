@@ -1,12 +1,14 @@
-import { Card, Badge, Button, Dialog, DialogButton } from "konsta/react";
+import { Block, Button, Chip, Dialog, Preloader } from "konsta/react";
+import { User, MapPin, X } from "lucide-react";
 import type { APIError, Stop } from "../../hooks/useFetchRoutes";
 import { useState } from "react";
 import z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import axios, { AxiosError } from "axios";
+import { AxiosError } from "axios";
 import { Toast } from "@capacitor/toast";
+import { api } from "../../service/apiClient";
 
 interface Props {
   stopData: Stop;
@@ -22,10 +24,9 @@ interface Payload {
 
 const schema = z.object({
   collectedVolume: z
-    .number({ message: "Route number is required" })
-    .int("Route number must be an integer")
+    .number({ message: "Volume is required" })
+    .int("Volume must be an integer")
     .gt(0, "Volume must be greater than 0"),
-
   report: z.string().optional(),
 });
 
@@ -35,23 +36,20 @@ const StopCard = ({ stopData, routeId }: Props) => {
   const [dialogOpened, setDialogOpened] = useState(false);
   const queryClient = useQueryClient();
 
-  const { mutate } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: (payload: Payload) =>
-      axios
-        .post(
-          "https://mclros-backend-2.onrender.com/api/routing/routes/confirm",
-          payload
-        )
-        .then((res) => res.data),
+      api.post("/routing/routes/confirm", payload).then((res) => res.data),
 
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["routes"] });
       queryClient.invalidateQueries({ queryKey: ["route", routeId] });
-      console.log("Submit Success");
+      Toast.show({
+        text: "Pickup confirmed successfully",
+        duration: "short",
+      });
     },
 
     onError: (error: AxiosError<APIError>) => {
-      console.log(error);
       Toast.show({
         text: error.response?.data.message ?? "Something went wrong",
         duration: "short",
@@ -59,140 +57,223 @@ const StopCard = ({ stopData, routeId }: Props) => {
     },
   });
 
-  const { register, handleSubmit } = useForm<SubmitionData>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<SubmitionData>({
     resolver: zodResolver(schema),
+    defaultValues: {
+      collectedVolume: stopData.production?.volume || 0,
+    },
   });
 
   const submitHandler = (data: SubmitionData) => {
-    console.log(data);
-
     mutate({
       route_id: routeId,
       production_id: stopData.production?._id || "",
       driver_id: "6935c6c814f7764f6bf9518c",
       collectedVolume: data.collectedVolume,
     });
-
     setDialogOpened(false);
+    reset();
+  };
+
+  const getStatusColor = (status?: string) => {
+    switch (status) {
+      case "pending":
+        return "bg-amber-500";
+      case "awaiting pickup":
+        return "bg-sky-600";
+      case "collected":
+        return "bg-green-500";
+      case "failed":
+        return "bg-red-500";
+      default:
+        return "bg-slate-500";
+    }
   };
 
   return (
     <>
-      <Card raised className="mb-3">
+      <Block strong inset className="drop-shadow-lg rounded-3xl bg-white p-5">
         {/* Header */}
-        <div className="flex justify-between items-start mb-3">
+        <div className="flex justify-between items-start mb-6">
           <div>
-            <div className="text-xs text-gray-500">Next Stop</div>
-            <div className="text-lg font-semibold">#{stopData.order - 1}</div>
+            <p className="text-xs font-semibold text-slate-500 uppercase mb-1">
+              Current Stop
+            </p>
+            <p className="text-lg font-bold text-slate-800">
+              #{stopData.order - 1}
+            </p>
           </div>
-
-          <Badge
-            className={`p-2 uppercase text-xs font-semibold ${
-              stopData.production?.status === "pending"
-                ? "k-color-brand-yellow"
-                : stopData.production?.status === "awaiting pickup"
-                ? "k-color-brand-primary"
-                : stopData.production?.status === "collected"
-                ? "k-color-brand-green"
-                : stopData.production?.status === "failed"
-                ? "k-color-brand-red"
-                : "k-color-brand-gray"
-            }`}
+          <Chip
+            className={`${getStatusColor(
+              stopData.production?.status,
+            )} text-white px-3 py-1 text-xs font-semibold uppercase`}
           >
             {stopData.production?.status}
-          </Badge>
+          </Chip>
         </div>
 
-        {/* Farmer */}
-        <div className="mb-3">
-          <div className="text-xs text-gray-500 mb-0.5">Farmer</div>
-          <div className="text-base font-semibold">
-            {stopData.production?.farmer.name}
-          </div>
-        </div>
-
-        {/* Address */}
-        <div className="mb-4">
-          <div className="text-xs text-gray-500 mb-0.5">Address</div>
-          <div className="text-sm text-gray-700 line-clamp-2">
-            {stopData.production?.farmer.address}
-          </div>
-        </div>
-
-        {/* Footer */}
-        <div className="flex justify-between items-center">
-          <div>
-            <div className="text-xs text-gray-500">Total Volume</div>
-            <div className="text-2xl font-bold">
-              {stopData.production?.volume}L
+        {/* Farmer Info */}
+        <div className="space-y-4 mb-6">
+          <div className="flex items-start gap-3 p-3 bg-sky-50 rounded-xl">
+            <div className="w-10 h-10 bg-sky-600 rounded-xl flex items-center justify-center shrink-0">
+              <User size={20} className="text-white" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-semibold text-slate-500 uppercase mb-1">
+                Farmer
+              </p>
+              <p className="text-base font-bold text-slate-800">
+                {stopData.production?.farmer.name}
+              </p>
             </div>
           </div>
 
-          <div>
-            <div className="text-xs text-gray-500">Tel</div>
-            <div className="font-bold">{stopData.production?.farmer.phone}</div>
+          <div className="flex items-start gap-3 p-3 bg-sky-50 rounded-xl">
+            <div className="w-10 h-10 bg-sky-600 rounded-xl flex items-center justify-center shrink-0">
+              <MapPin size={20} className="text-white" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-semibold text-slate-500 uppercase mb-1">
+                Address
+              </p>
+              <p className="text-sm text-slate-700 line-clamp-2">
+                {stopData.production?.farmer.address}
+              </p>
+            </div>
           </div>
         </div>
 
+        {/* Stats Grid */}
+        <div className="grid grid-cols-2 gap-4 mb-6">
+          <div className="p-4 bg-sky-50 rounded-xl text-center">
+            <p className="text-xs font-semibold text-slate-500 uppercase mb-1">
+              Volume
+            </p>
+            <p className="text-xl font-bold text-slate-800">
+              {stopData.production?.volume}L
+            </p>
+          </div>
+
+          <div className="p-4 bg-sky-50 rounded-xl text-center">
+            <p className="text-xs font-semibold text-slate-500 uppercase mb-1">
+              Contact
+            </p>
+            <p className="text-sm font-bold text-slate-800">
+              {stopData.production?.farmer.phone}
+            </p>
+          </div>
+        </div>
+
+        {/* Confirm Button */}
         <Button
           rounded
-          className="my-1"
-          onClick={() => {
-            setDialogOpened(true);
-          }}
+          raised
+          large
+          style={{ backgroundColor: "#0284c7" }}
+          className="w-full text-white h-12 font-semibold shadow-md"
+          onClick={() => setDialogOpened(true)}
         >
-          Confirm
+          Confirm Pickup
         </Button>
-      </Card>
+      </Block>
 
+      {/* Confirmation Dialog */}
       <Dialog
-        className="w-full"
+        className="p-0"
         opened={dialogOpened}
         onBackdropClick={() => setDialogOpened(false)}
-        title="Production Info"
-        content={
-          <form
-            onSubmit={handleSubmit(submitHandler)}
-            className="flex flex-col gap-4"
-          >
-            <label htmlFor="milkAmount" className="text-gray-700">
-              Enter collected volume
-            </label>
-            <input
-              {...register("collectedVolume", { valueAsNumber: true })}
-              id="milkAmount"
-              type="number"
-              className="w-full px-3 py-2 rounded-xl border-2 border-sky-800/15"
-              placeholder="Enter litres"
-            />
+      >
+        <form
+          onSubmit={handleSubmit(submitHandler)}
+          className="bg-white rounded-3xl"
+        >
+          {/* Dialog Header */}
+          <div className="flex items-center justify-between p-6 border-b border-slate-200">
+            <h2 className="text-lg font-semibold text-slate-800">
+              Confirm Pickup
+            </h2>
+            <button
+              type="button"
+              onClick={() => setDialogOpened(false)}
+              className="p-1 hover:bg-slate-100 rounded-lg transition-colors"
+            >
+              <X size={24} className="text-slate-600" />
+            </button>
+          </div>
 
-            <label htmlFor="report" className="text-gray-700">
-              Report issue
-            </label>
-            <input
-              {...register("report")}
-              id="report"
-              type="text"
-              className="w-full px-3 py-2 rounded-xl border-2 border-sky-800/15"
-              placeholder="Enter issue"
-            />
-
-            <div className="flex justify-end gap-2">
-              <DialogButton
-                type="reset"
-                onClick={() => {
-                  setDialogOpened(false);
-                }}
+          {/* Dialog Content */}
+          <div className="p-6 space-y-4">
+            <div>
+              <label
+                htmlFor="collectedVolume"
+                className="block mb-2 text-sm font-semibold text-slate-700"
               >
-                Cancel
-              </DialogButton>
-              <DialogButton className="bg-sky-800" type="submit" strong>
-                Submit
-              </DialogButton>
+                Collected Volume (Liters)
+              </label>
+              <input
+                {...register("collectedVolume", { valueAsNumber: true })}
+                id="collectedVolume"
+                type="number"
+                inputMode="decimal"
+                className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:border-sky-600 focus:outline-none transition-colors bg-slate-50 text-slate-800 placeholder:text-slate-400"
+                placeholder="Enter collected volume"
+              />
+              {errors.collectedVolume && (
+                <p className="text-xs text-red-500 mt-1">
+                  {errors.collectedVolume.message}
+                </p>
+              )}
             </div>
-          </form>
-        }
-      />
+
+            <div>
+              <label
+                htmlFor="report"
+                className="block mb-2 text-sm font-semibold text-slate-700"
+              >
+                Report Issue (Optional)
+              </label>
+              <textarea
+                {...register("report")}
+                id="report"
+                rows={3}
+                className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:border-sky-600 focus:outline-none transition-colors bg-slate-50 text-slate-800 placeholder:text-slate-400 resize-none"
+                placeholder="Describe any issues..."
+              />
+            </div>
+          </div>
+
+          {/* Dialog Actions */}
+          <div className="p-6 pt-0 flex gap-3">
+            <Button
+              type="button"
+              rounded
+              outline
+              className="flex-1 border-2 border-slate-300 text-slate-700 h-12 font-semibold"
+              onClick={() => {
+                setDialogOpened(false);
+                reset();
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              rounded
+              raised
+              style={{ backgroundColor: "#0284c7" }}
+              className="flex-1 text-white h-12 font-semibold"
+              disabled={isPending}
+            >
+              {isPending ? <Preloader className="w-5 h-5" /> : "Confirm"}
+            </Button>
+          </div>
+        </form>
+      </Dialog>
     </>
   );
 };

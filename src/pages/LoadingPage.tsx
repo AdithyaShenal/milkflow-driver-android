@@ -1,17 +1,12 @@
-import { useLottie } from "lottie-react";
-import loadingAnimation from "../assets/Loading Dots.json";
+import { Preloader } from "konsta/react";
 
 const LoadingPage = () => {
-  const options = {
-    animationData: loadingAnimation,
-    loop: true,
-  };
-
-  const { View } = useLottie(options);
-
   return (
-    <div className="flex justify-center items-center h-screen w-screen">
-      <div className="w-80 h-80">{View}</div>
+    <div className="fixed inset-0 flex justify-center items-center bg-slate-50">
+      <div className="flex flex-col items-center gap-4">
+        <Preloader />
+        <p className="text-sm font-medium text-slate-600">Loading...</p>
+      </div>
     </div>
   );
 };

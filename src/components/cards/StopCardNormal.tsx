@@ -1,68 +1,90 @@
-import { Card, Badge } from "konsta/react";
+import { Block, Chip } from "konsta/react";
+import { MapPin, Phone, Droplet } from "lucide-react";
 import type { Stop } from "../../hooks/useFetchRoutes";
 
 interface Props {
   stopData: Stop;
+  stopNumber?: number;
 }
 
-const STATUS_COLOR: Record<
-  string,
-  "yellow" | "primary" | "green" | "red" | "gray"
-> = {
-  pending: "yellow",
-  "awaiting pickup": "primary",
-  collected: "green",
-  failed: "red",
-};
+const StopCardNormal = ({ stopData, stopNumber }: Props) => {
+  const getStatusColor = (status?: string) => {
+    switch (status) {
+      case "pending":
+        return "bg-amber-500";
+      case "awaiting pickup":
+        return "bg-sky-600";
+      case "collected":
+        return "bg-green-500";
+      case "failed":
+        return "bg-red-500";
+      default:
+        return "bg-slate-500";
+    }
+  };
 
-const StopCardNormal = ({ stopData }: Props) => {
   return (
-    <Card raised className="mb-3">
+    <Block strong inset className="shadow-lg rounded-3xl bg-white p-6">
       {/* Header */}
-      <div className="flex justify-between items-start mb-3">
+      <div className="flex justify-between items-start mb-4">
         <div>
-          <div className="text-xs text-gray-500">Next Stop</div>
-          <div className="text-lg font-semibold">#{stopData.order - 1}</div>
+          <p className="text-xs font-semibold text-slate-500 uppercase mb-1">
+            Stop {stopNumber ? `#${stopNumber}` : `#${stopData.order - 1}`}
+          </p>
+          <p className="text-lg font-bold text-slate-800">
+            {stopData.production?.farmer.name}
+          </p>
         </div>
-
-        <Badge
-          className={`p-2 uppercase text-xs font-semibold "k-color-brand-${STATUS_COLOR[status]}`}
+        <Chip
+          className={`${getStatusColor(
+            stopData.production?.status,
+          )} text-white px-3 py-1 text-xs font-semibold uppercase`}
         >
           {stopData.production?.status}
-        </Badge>
+        </Chip>
       </div>
 
-      {/* Farmer */}
-      <div className="mb-3">
-        <div className="text-xs text-gray-500 mb-0.5">Farmer</div>
-        <div className="text-base font-semibold">
-          {stopData.production?.farmer.name}
-        </div>
-      </div>
-
-      {/* Address */}
-      <div className="mb-4">
-        <div className="text-xs text-gray-500 mb-0.5">Address</div>
-        <div className="text-sm text-gray-700 line-clamp-2">
-          {stopData.production?.farmer.address}
-        </div>
-      </div>
-
-      {/* Footer */}
-      <div className="flex justify-between items-center">
-        <div>
-          <div className="text-xs text-gray-500">Total Volume</div>
-          <div className="text-2xl font-bold">
-            {stopData.production?.volume}L
+      {/* Info Grid */}
+      <div className="space-y-3">
+        <div className="flex items-start gap-3 p-3 bg-slate-50 rounded-xl">
+          <MapPin size={18} className="text-slate-500 mt-0.5 flex-shrink-0" />
+          <div className="flex-1 min-w-0">
+            <p className="text-xs font-semibold text-slate-500 uppercase mb-1">
+              Address
+            </p>
+            <p className="text-sm text-slate-700 line-clamp-2">
+              {stopData.production?.farmer.address}
+            </p>
           </div>
         </div>
 
-        <div>
-          <div className="text-xs text-gray-500">Tel</div>
-          <div className="font-bold">{stopData.production?.farmer.phone}</div>
+        <div className="grid grid-cols-2 gap-3">
+          <div className="flex items-center gap-2 p-3 bg-sky-50 rounded-xl">
+            <Droplet size={18} className="text-sky-600 flex-shrink-0" />
+            <div>
+              <p className="text-xs font-semibold text-slate-500 uppercase">
+                Volume
+              </p>
+              <p className="text-lg font-bold text-slate-800">
+                {stopData.production?.volume}L
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 p-3 bg-slate-50 rounded-xl">
+            <Phone size={18} className="text-slate-600 flex-shrink-0" />
+            <div className="min-w-0">
+              <p className="text-xs font-semibold text-slate-500 uppercase">
+                Phone
+              </p>
+              <p className="text-sm font-bold text-slate-800 truncate">
+                {stopData.production?.farmer.phone}
+              </p>
+            </div>
+          </div>
         </div>
       </div>
-    </Card>
+    </Block>
   );
 };
 

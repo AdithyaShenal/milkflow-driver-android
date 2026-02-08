@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import axios, { type AxiosError } from "axios";
+import { type AxiosError } from "axios";
+import { api } from "../service/apiClient";
 
 interface Farmer {
   _id: string;
@@ -56,8 +57,8 @@ export const useFetchRoutes = (driver_id: string) =>
   useQuery<Route[], AxiosError<APIError>>({
     queryKey: ["routes"],
     queryFn: async () => {
-      const res = await axios.get<Route[]>(
-        `https://mclros-backend-2.onrender.com/api/routing/routes/pending_routes/${driver_id}`
+      const res = await api.get<Route[]>(
+        `/routing/routes/pending_routes/${driver_id}`,
       );
 
       return res.data;

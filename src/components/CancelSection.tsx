@@ -18,7 +18,7 @@ const CancelSection = ({ routeId }: Props) => {
   const { mutate, isPending } = useMutation({
     mutationFn: (routeId: string) =>
       axios.post(
-        `https://mclros-backend-2.onrender.com/api/routing/routes/cancel/${routeId}`
+        `https://mclros-backend-2.onrender.com/api/routing/routes/cancel/${routeId}`,
       ),
 
     onSuccess: () => {
@@ -36,13 +36,17 @@ const CancelSection = ({ routeId }: Props) => {
 
   return (
     <>
-      <Block inset strong nested className="k-color-brand-red">
+      <Block inset nested className="k-color-brand-red p-0">
         <Button
           rounded
-          className="bg-red-600"
-          onClick={() => setConfirmOpened(true)}
+          raised
+          large
+          className="w-full text-white h-12 bg-red-500 font-semibold shadow-md"
+          onClick={() => {
+            setConfirmOpened(true);
+          }}
         >
-          Cancel Route
+          Cancel
         </Button>
       </Block>
 

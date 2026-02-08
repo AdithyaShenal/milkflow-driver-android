@@ -60,17 +60,15 @@ const ActiveRoutePage = () => {
         <div className="h-80 z-0">
           <MapLibreComponent route={route} currentStop={currentStop} />
         </div>
-        <Block inset nested className="flex justify-center items-center">
-          <Button
-            className="bg-black/50 w-22 text-xs"
-            rounded
-            onClick={() => {
-              navigate("/fullMap", { state: { route, currentStop } });
-            }}
-          >
-            Open Map
-          </Button>
-        </Block>
+        <Button
+          className="bg-black/50 text-xs w-[92%] m-auto"
+          rounded
+          onClick={() => {
+            navigate("/fullMap", { state: { route, currentStop } });
+          }}
+        >
+          Open Map
+        </Button>
 
         {!routeComplete && currentStop && routeId && (
           <StopCard stopData={currentStop} routeId={routeId} />
@@ -94,9 +92,13 @@ const ActiveRoutePage = () => {
           </Block>
         )}
 
-        <Block inset strong nested className="mb-3">
+        <Block inset nested className="mb-10 p-0">
           <Button
             rounded
+            raised
+            large
+            style={{ backgroundColor: "#0284c7" }}
+            className="w-full text-white h-12 font-semibold shadow-md"
             onClick={() => {
               navigate("/pickupList", { state: { routeId } });
             }}

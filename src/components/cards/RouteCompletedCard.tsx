@@ -1,28 +1,27 @@
 import { Block } from "konsta/react";
-import { CircleCheck } from "lucide-react";
+import { CheckCircle } from "lucide-react";
 
 const RouteCompletedCard = () => {
   return (
-    <>
-      <Block inset strong nested className="rounded-full k-color-brand-green">
-        <div
-          className="
-            bg-green-700
-            rounded-full
-            flex
-            items-center
-            justify-center
-            text-white
-            gap-4
-            h-20
-            
-            "
-        >
-          <CircleCheck />
-          <p>Route Completed</p>
+    <Block
+      strong
+      inset
+      className="shadow-lg rounded-3xl bg-linear-to-br from-green-500 to-green-600 p-8"
+    >
+      <div className="flex flex-col items-center gap-4 text-center">
+        <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+          <CheckCircle size={40} className="text-white" />
         </div>
-      </Block>
-    </>
+        <div>
+          <h3 className="text-2xl font-bold text-white mb-2">
+            Route Completed!
+          </h3>
+          <p className="text-white/90 text-sm">
+            All pickups have been successfully completed
+          </p>
+        </div>
+      </div>
+    </Block>
   );
 };
 

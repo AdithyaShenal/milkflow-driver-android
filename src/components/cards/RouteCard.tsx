@@ -1,4 +1,5 @@
-import { Card, Badge } from "konsta/react";
+import { Block, Chip } from "konsta/react";
+import { Truck, MapPin, Droplet, Route as RouteIcon } from "lucide-react";
 import type { Route } from "../../hooks/useFetchRoutes";
 
 interface Props {
@@ -7,36 +8,58 @@ interface Props {
 
 const RouteCard = ({ routeProps }: Props) => {
   return (
-    <Card raised className="mb-3">
+    <Block strong inset className="shadow-lg rounded-3xl bg-white p-6">
       {/* Header */}
-      <div className="flex justify-between items-center mb-3">
-        <div className="text-lg font-semibold">{routeProps.license_no}</div>
-
-        <Badge className="uppercase text-xs font-semibold k-color-brand-green p-2">
+      <div className="flex justify-between items-start mb-6">
+        <div className="flex items-center gap-3">
+          <div className="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center">
+            <Truck size={24} className="text-green-600" />
+          </div>
+          <div>
+            <p className="text-xs font-semibold text-slate-500 uppercase mb-1">
+              Vehicle
+            </p>
+            <p className="text-lg font-bold text-slate-800">
+              {routeProps.license_no}
+            </p>
+          </div>
+        </div>
+        <Chip className="bg-green-500 text-white px-3 py-1 text-xs font-semibold uppercase">
           {routeProps.status}
-        </Badge>
+        </Chip>
       </div>
 
-      {/* Stats */}
-      <div className="divide-y divide-gray-200 text-sm">
-        <div className="flex justify-between py-2">
-          <span className="text-gray-600">Total stops</span>
-          <span className="font-medium">{routeProps.stops.length}</span>
+      {/* Stats Grid */}
+      <div className="grid grid-cols-3 gap-3">
+        <div className="p-3 bg-slate-50 rounded-xl text-center">
+          <MapPin size={20} className="text-slate-600 mx-auto mb-2" />
+          <p className="text-xs font-semibold text-slate-500 uppercase mb-1">
+            Stops
+          </p>
+          <p className="text-lg font-bold text-slate-800">
+            {routeProps.stops.length}
+          </p>
         </div>
 
-        <div className="flex justify-between py-2">
-          <span className="text-gray-600">Total load</span>
-          <span className="font-medium">{routeProps.load} L</span>
+        <div className="p-3 bg-sky-50 rounded-xl text-center">
+          <Droplet size={20} className="text-sky-600 mx-auto mb-2" />
+          <p className="text-xs font-semibold text-slate-500 uppercase mb-1">
+            Load
+          </p>
+          <p className="text-lg font-bold text-slate-800">{routeProps.load}L</p>
         </div>
 
-        <div className="flex justify-between py-2">
-          <span className="text-gray-600">Distance</span>
-          <span className="font-medium">
-            {(routeProps.distance / 1000).toFixed(1)} km
-          </span>
+        <div className="p-3 bg-slate-50 rounded-xl text-center">
+          <RouteIcon size={20} className="text-slate-600 mx-auto mb-2" />
+          <p className="text-xs font-semibold text-slate-500 uppercase mb-1">
+            Distance
+          </p>
+          <p className="text-lg font-bold text-slate-800">
+            {(routeProps.distance / 1000).toFixed(1)}km
+          </p>
         </div>
       </div>
-    </Card>
+    </Block>
   );
 };
 

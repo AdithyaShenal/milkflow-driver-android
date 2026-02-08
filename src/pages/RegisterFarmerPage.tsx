@@ -83,7 +83,7 @@ const RegisterFarmerPage = () => {
       });
     } catch (err) {
       setLocationError(
-        err instanceof Error ? err.message : "Unable to access location"
+        err instanceof Error ? err.message : "Unable to access location",
       );
     }
   };

@@ -17,7 +17,7 @@ const NavBar = () => {
 
   const handleLogout = async () => {
     setConfirmOpened(false);
-    await Preferences.remove({ key: "authTokenDriver" });
+    await Preferences.remove({ key: "authToken" });
     queryClient.clear();
     navigate("/");
   };
@@ -53,6 +53,7 @@ const NavBar = () => {
 
       {/* Logout Confirmation Dialog */}
       <Dialog
+        className="p-0"
         opened={confirmOpened}
         onBackdropClick={() => setConfirmOpened(false)}
       >

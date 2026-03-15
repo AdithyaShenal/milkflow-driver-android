@@ -12,7 +12,7 @@ const schema = z.object({
     .min(3, "Username must be atleast 3 characters"),
   pinNo: z
     .string({ message: "Pin must be entered" })
-    .min(5, "Password must be atleast 5 characters"),
+    .min(4, "Password must be atleast 5 characters"),
 });
 
 type LoginFormData = z.infer<typeof schema>;
@@ -79,14 +79,13 @@ const LoginPage = () => {
                 htmlFor="pin"
                 className="block mb-2 text-sm font-semibold text-slate-700"
               >
-                Password
+                Pin No
               </label>
               <input
                 {...register("pinNo")}
                 autoComplete="additional-name"
                 id="pin"
                 type="password"
-                inputMode="numeric"
                 className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:border-sky-600 focus:outline-none transition-colors bg-slate-50 text-slate-800 placeholder:text-slate-400"
                 placeholder="Enter your password"
               />

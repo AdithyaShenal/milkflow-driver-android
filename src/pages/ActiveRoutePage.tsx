@@ -78,10 +78,11 @@ const ActiveRoutePage = () => {
 
         {/* Completion button */}
         {route.status !== "completed" && routeComplete && (
-          <Block inset strong>
+          <Block inset nested className="mb-10 p-0">
             <Button
+              style={{ backgroundColor: "#10b981" }}
               disabled={isPending}
-              className="k-color-brand-green"
+              className="w-full text-white h-12 font-semibold shadow-md"
               onClick={() => {
                 completeMutate();
               }}
